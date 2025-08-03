@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productivity Pulse - Time Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            width: 350px;
+            height: 500px;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #e2e8f0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .productivity-meter {
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+        }
+        
+        .meter-indicator {
+            width: 6px;
+            height: 20px;
+            background-color: white;
+            border-radius: 3px;
+            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+            position: absolute;
+            top: -6px;
+            transform: translateX(-50%);
+        }
+        
+        .website-card {
+            transition: all 0.2s ease;
+        }
+        
+        .website-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        
+        .tab-button {
+            transition: all 0.2s ease;
+        }
+        
+        .tab-button.active {
+            border-bottom-width: 2px;
+            border-bottom-color: #3b82f6;
+        }
+        
+        .chart-container {
+            height: 200px;
+        }
+        
+        .category-tag {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="flex flex-col">
+    <div class="bg-white p-4 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <h1 class="text-lg font-semibold">Productivity Pulse</h1>
+            </div>
+            <button id="settingsBtn" class="text-gray-500 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        
+        <div class="mt-4">
+            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                <span>Today's Productivity</span>
+                <span id="productivityScore">73%</span>
+            </div>
+            <div class="productivity-meter relative">
+                <div class="meter-indicator" style="left: 73%"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="px-4 py-2 bg-white border-b border-gray-200 flex">
+        <button class="tab-button py-2 px-4 mr-2 font-medium active" data-tab="dashboard">Dashboard</button>
+        <button class="tab-button py-2 px-4 mr-2 font-medium" data-tab="websites">Websites</button>
+        <button class="tab-button py-2 px-4 font-medium" data-tab="reports">Reports</button>
+    </div>
+    
+    <div class="flex-1 overflow-y-auto">
+        <!-- Dashboard Tab -->
+        <div id="dashboardTab" class="tab-content p-4">
+            <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+                <h2 class="font-medium text-gray-700 mb-3">Daily Summary</h2>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">4h 32m</div>
+                        <div class="text-xs text-gray-500">Productive</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-red-600">1h 15m</div>
+                        <div class="text-xs text-gray-500">Unproductive</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold">5h 47m</div>
+                        <div class="text-xs text-gray-500">Total</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+                <h2 class="font-medium text-gray-700 mb-3">Time Distribution</h2>
+                <div class="chart-container">
+                    <img src="https://placehold.co/600x300?text=Pie+Chart+Visualization" alt="Pie chart showing time distribution across different website categories" />
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm p-4">
+                <h2 class="font-medium text-gray-700 mb-3">Top Websites</h2>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between website-card bg-gray-50 rounded-lg p-3">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded bg-blue-100 flex items-center justify-center mr-3">
+                                <img src="https://www.google.com/s2/favicons?domain=github.com" alt="GitHub favicon" class="w-4 h-4" />
+                            </div>
+                            <div>
+                                <div class="font-medium">github.com</div>
+                                <div class="text-xs text-gray-500">Development</div>
+                            </div>
+                        </div>
+                        <div class="text-sm font-medium text-green-600">2h 43m</div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between website-card bg-gray-50 rounded-lg p-3">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded bg-purple-100 flex items-center justify-center mr-3">
+                                <img src="https://www.google.com/s2/favicons?domain=twitter.com" alt="Twitter favicon" class="w-4 h-4" />
+                            </div>
+                            <div>
+                                <div class="font-medium">twitter.com</div>
+                                <div class="text-xs text-gray-500">Social Media</div>
+                            </div>
+                        </div>
+                        <div class="text-sm font-medium text-red-600">48m</div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between website-card bg-gray-50 rounded-lg p-3">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded bg-orange-100 flex items-center justify-center mr-3">
+                                <img src="https://www.google.com/s2/favicons?domain=stackoverflow.com" alt="Stack Overflow favicon" class="w-4 h-4" />
+                            </div>
+                            <div>
+                                <div class="font-medium">stackoverflow.com</div>
+                                <div class="text-xs text-gray-500">Learning</div>
+                            </div>
+                        </div>
+                        <div class="text-sm font-medium text-green-600">1h 12m</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Websites Tab -->
+        <div id="websitesTab" class="tab-content p-4 hidden">
+            <div class="mb-4">
+                <div class="relative">
+                    <input type="text" placeholder="Search websites..." class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute right-3 top-2.5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="flex mb-4">
+                <select class="flex-1 mr-2 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option>All Categories</option>
+                    <option>Productive</option>
+                    <option>Unproductive</option>
+                    <option>Neutral</option>
+                </select>
+                
+                <select class="flex-1 ml-2 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option>All Time</option>
+                    <option>Today</option>
+                    <option>This Week</option>
+                    <option>This Month</option>
+                </select>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="flex items-center justify-between p-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mr-3">
+                                <img src="https://www.google.com/s2/favicons?domain=github.com" alt="GitHub favicon" class="w-5 h-5" />
+                            </div>
+                            <div>
+                                <div class="font-medium">github.com</div>
+                                <div class="text-xs text-gray-500">Development</div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="category-tag bg-green-100 text-green-800">Productive</span>
+                        </div>
+                    </div>
+                    <div class="px-4 pb-4">
+                        <div class="flex justify-between text-sm text-gray-600 mb-1">
+                            <span>Time Spent: 2h 43m</span>
+                            <span>43 visits</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-blue-500" style="width: 68%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="flex items-center justify-between p-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center mr-3">
+                                <img src="https://www.google.com/s2/favicons?domain=twitter.com" alt="Twitter favicon" class="w-5 h-5" />
+                            </div>
+                            <div>
+                                <div class="font-medium">twitter.com</div>
+                                <div class="text-xs text-gray-500">Social Media</div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="category-tag bg-red-100 text-red-800">Unproductive</span>
+                        </div>
+                    </div>
+                    <div class="px-4 pb-4">
+                        <div class="flex justify-between text-sm text-gray-600 mb-1">
+                            <span>Time Spent: 48m</span>
+                            <span>22 visits</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-purple-500" style="width: 38%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="flex items-center justify-between p-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center mr-3">
+                                <img src="https://www.google.com/s2/favicons?domain=stackoverflow.com" alt="Stack Overflow favicon" class="w-5 h-5" />
+                            </div>
+                            <div>
+                                <div class="font-medium">stackoverflow.com</div>
+                                <div class="text-xs text-gray-500">Learning</div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="category-tag bg-green-100 text-green-800">Productive</span>
+                        </div>
+                    </div>
+                    <div class="px-4 pb-4">
+                        <div class="flex justify-between text-sm text-gray-600 mb-1">
+                            <span>Time Spent: 1h 12m</span>
+                            <span>15 visits</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-orange-500" style="width: 52%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="flex items-center justify-between p-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center mr-3">
+                                <img src="https://www.google.com/s2/favicons?domain=youtube.com" alt="YouTube favicon" class="w-5 h-5" />
+                            </div>
+                            <div>
+                                <div class="font-medium">youtube.com</div>
+                                <div class="text-xs text-gray-500">Entertainment</div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="category-tag bg-red-100 text-red-800">Unproductive</span>
+                        </div>
+                    </div>
+                    <div class="px-4 pb-4">
+                        <div class="flex justify-between text-sm text-gray-600 mb-1">
+                            <span>Time Spent: 35m</span>
+                            <span>8 visits</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-red-500" style="width: 25%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reports Tab -->
+        <div id="reportsTab" class="tab-content p-4 hidden">
+            <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+                <h2 class="font-medium text-gray-700 mb-3">Weekly Productivity</h2>
+                <div class="chart-container">
+                    <img src="https://placehold.co/600x300?text=Bar+Chart+Visualization" alt="Bar chart showing weekly productivity trends" />
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm p-4">
+                <h2 class="font-medium text-gray-700 mb-3">Productivity Insights</h2>
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-700 mb-1">Most Productive Day</h3>
+                        <p class="text-sm text-gray-600">Wednesday - 6h 12m of productive time</p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-700 mb-1">Peak Productivity Hours</h3>
+                        <p class="text-sm text-gray-600">10 AM - 12 PM</p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-700 mb-1">Weekly Focus Score</h3>
+                        <p class="text-sm text-gray-600">76% (-4% from last week)</p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-700 mb-1">Time Saves</h3>
+                        <p class="text-sm text-gray-600">Saved 1h 23m compared to last week by reducing twitter.com usage</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white border-t border-gray-200 p-3 flex justify-between items-center">
+        <div class="text-sm">
+            <span class="font-medium text-gray-700">Session:</span>
+            <span class="text-gray-600 ml-1">3h 18m</span>
+        </div>
+        <button id="pauseTrackingBtn" class="rounded-full bg-gray-100 hover:bg-gray-200 px-3 py-1 text-sm font-medium text-gray-700 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Pause
+        </button>
+    </div>
+    
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+                
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab') + 'Tab';
+                document.getElementById(tabId).classList.remove('hidden');
+            });
+        });
+        
+        // Settings button handler
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            alert('Settings would open here in a real implementation');
+        });
+        
+        // Pause tracking button handler
+        document.getElementById('pauseTrackingBtn').addEventListener('click', function() {
+            const isPaused = this.textContent.trim() === 'Resume';
+            this.textContent = isPaused ? 'Pause' : 'Resume';
+            
+            const icon = this.querySelector('svg');
+            icon.innerHTML = isPaused 
+                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />' 
+                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />';
+            
+            alert(`Time tracking ${isPaused ? 'resumed' : 'paused'}`);
+        });
+        
+        // Simulate updating time (in a real extension, this would come from background.js)
+        function updateSessionTime() {
+            const sessionElement = document.querySelector('.border-t div span:last-child');
+            let [hours, minutes] = sessionElement.textContent.split(':').map(Number);
+            
+            minutes += 1;
+            if (minutes >= 60) {
+                hours += 1;
+                minutes = 0;
+            }
+            
+            sessionElement.textContent = `${hours}h ${minutes}m`;
+        }
+        
+        // Update session time every minute (demo only)
+        setInterval(updateSessionTime, 60000);
+    </script>
+</body>
+</html>

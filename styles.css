@@ -1,0 +1,64 @@
+body {
+    font-family: 'Inter', sans-serif;
+    width: 350px;
+    height: 500px;
+    background-color: #f8fafc;
+    color: #1e293b;
+}
+
+.progress-bar {
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: #e2e8f0;
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.productivity-meter {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+}
+
+.meter-indicator {
+    width: 6px;
+    height: 20px;
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: 0 0 2px rgba(0,0,0,0.2);
+    position: absolute;
+    top: -6px;
+    transform: translateX(-50%);
+}
+
+.website-card {
+    transition: all 0.2s ease;
+}
+
+.website-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+.tab-button {
+    transition: all 0.2s ease;
+}
+
+.tab-button.active {
+    border-bottom-width: 2px;
+    border-bottom-color: #3b82f6;
+}
+
+.chart-container {
+    height: 200px;
+}
+
+.category-tag {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+}
