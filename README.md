@@ -12,6 +12,8 @@
 
 *MENTOR*: NEELA SANTOSH
 
+A Chrome extension that tracks time spent on websites and provides productivity analytics
+
 
 
 
